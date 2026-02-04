@@ -80,7 +80,51 @@ if question_type == "MCQ":
 # Extract Selection (placeholder for later)
 # ============================================================
 else:
-    st.info("Extract-selection UI will render here")
+    st.subheader("📖 Reading Extracts")
+
+    extracts = {}
+
+    for label in ["A", "B", "C", "D"]:
+        with st.expander(f"Extract {label}", expanded=(label in ["A", "B"])):
+            title = st.text_input(
+                f"Extract {label} Title",
+                key=f"extract_{label}_title"
+            )
+            text = st.text_area(
+                f"Extract {label} Text",
+                height=200,
+                key=f"extract_{label}_text"
+            )
+
+            extracts[label] = {
+                "title": title.strip(),
+                "text": text.strip()
+            }
+
+    st.divider()
+
+    st.subheader("❓ Questions")
+
+    questions = []
+
+    for i in range(1, total_questions + 1):
+        with st.expander(f"Question {i}", expanded=(i == 1)):
+            q_text = st.text_area(
+                "Question Text",
+                key=f"extract_q_text_{i}"
+            )
+
+            correct = st.selectbox(
+                "Correct Extract",
+                ["A", "B", "C", "D"],
+                key=f"extract_correct_{i}"
+            )
+
+            questions.append({
+                "question_id": f"Q{i}",
+                "question_text": q_text,
+                "correct_answer": correct
+            })
 
 st.divider()
 
