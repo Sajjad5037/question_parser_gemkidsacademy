@@ -10,9 +10,9 @@ st.title("📘 Exam Question Builder")
 # ============================================================
 # Exam Metadata (Single Pass)
 # ============================================================
-st.subheader("🧾 Exam Metadata")
 
-exam_id = st.number_input("Exam ID", min_value=1, step=1)
+
+
 class_name = st.text_input("Class Name", value="Selective")
 subject = st.text_input("Subject", value="Reading Comprehension")
 topic = st.text_input("Topic")
