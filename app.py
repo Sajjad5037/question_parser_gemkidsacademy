@@ -131,7 +131,7 @@ st.divider()
 # ============================================================
 # Create Exam (Final Action)
 # ============================================================
-if st.button("🧠 Create Exam"):
+if st.button("🧠 Create Question"):
 
     # ---- Basic validation (minimal, expand later)
     missing_paragraphs = [
