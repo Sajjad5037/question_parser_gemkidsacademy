@@ -5,7 +5,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📘 Reading Comprehension Exam Builder")
+st.title("📘 Exam Question Builder")
 
 # ============================================================
 # Exam Metadata (Single Pass)
