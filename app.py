@@ -6,6 +6,12 @@ st.set_page_config(page_title="Comparative Exam Builder", layout="wide")
 st.title("📘 Comparative Reading Exam Builder")
 
 # =====================
+# Session State Init
+# =====================
+if "meta_saved" not in st.session_state:
+    st.session_state.meta_saved = False
+
+# =====================
 # Exam Metadata
 # =====================
 with st.form("exam_metadata"):
@@ -22,13 +28,31 @@ with st.form("exam_metadata"):
         ["MCQ", "EXTRACT_SELECTION"]
     )
 
-    submitted_meta = st.form_submit_button("Save Metadata")
+    save_meta = st.form_submit_button("Save Metadata")
 
-if not submitted_meta:
-    st.stop()
+if save_meta:
+    st.session_state.meta_saved = True
+    st.session_state.exam_meta = {
+        "exam_id": exam_id,
+        "class_name": class_name,
+        "subject": subject,
+        "topic": topic,
+        "difficulty": difficulty,
+        "total_questions": total_questions,
+        "question_type": question_type
+    }
 
 # =====================
-# Extract Inputs
+# Stop here if metadata not saved
+# =====================
+if not st.session_state.meta_saved:
+    st.info("⬆️ Please save Exam Metadata to continue.")
+    st.stop()
+
+meta = st.session_state.exam_meta
+
+# =====================
+# Extract Inputs (NOW VISIBLE)
 # =====================
 st.subheader("📖 Reading Extracts")
 
@@ -36,11 +60,14 @@ extracts = {}
 
 for label in ["A", "B", "C", "D"]:
     with st.expander(f"Extract {label}", expanded=(label in ["A", "B"])):
-        title = st.text_input(f"Extract {label} Title", key=f"title_{label}")
+        title = st.text_input(
+            f"Extract {label} Title",
+            key=f"extract_{label}_title"
+        )
         text = st.text_area(
             f"Extract {label} Text",
             height=220,
-            key=f"text_{label}"
+            key=f"extract_{label}_text"
         )
         extracts[label] = {
             "title": title.strip(),
@@ -54,14 +81,14 @@ st.subheader("❓ Questions")
 
 questions = []
 
-for i in range(1, total_questions + 1):
+for i in range(1, meta["total_questions"] + 1):
     with st.expander(f"Question {i}", expanded=(i == 1)):
         q_text = st.text_area(
             "Question Text",
             key=f"q_text_{i}"
         )
 
-        if question_type == "MCQ":
+        if meta["question_type"] == "MCQ":
             opt_a = st.text_input("Option A", key=f"optA_{i}")
             opt_b = st.text_input("Option B", key=f"optB_{i}")
             opt_c = st.text_input("Option C", key=f"optC_{i}")
@@ -90,20 +117,20 @@ for i in range(1, total_questions + 1):
         })
 
 # =====================
-# Build CSV
+# CSV Generation
 # =====================
 if st.button("📥 Generate CSV"):
     rows = []
 
     for q in questions:
         rows.append({
-            "exam_id": exam_id,
-            "class_name": class_name,
-            "subject": subject,
-            "topic": topic,
-            "difficulty": difficulty,
-            "total_questions": total_questions,
-            "question_type": question_type,
+            "exam_id": meta["exam_id"],
+            "class_name": meta["class_name"],
+            "subject": meta["subject"],
+            "topic": meta["topic"],
+            "difficulty": meta["difficulty"],
+            "total_questions": meta["total_questions"],
+            "question_type": meta["question_type"],
 
             "extract_A_title": extracts["A"]["title"],
             "extract_A_text": extracts["A"]["text"],
@@ -125,7 +152,7 @@ if st.button("📥 Generate CSV"):
 
     df = pd.DataFrame(rows)
 
-    st.success("CSV generated successfully")
+    st.success("✅ CSV generated successfully")
 
     st.download_button(
         label="⬇️ Download CSV",
