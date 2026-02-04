@@ -119,7 +119,7 @@ for i in range(1, meta["total_questions"] + 1):
 # =====================
 # CSV Generation
 # =====================
-if st.button("📥 Generate CSV"):
+if st.button("📥 Save Question"):
     rows = []
 
     for q in questions:
